@@ -4,6 +4,8 @@ You probably already version the packages you use in your project, but have you 
 
 NOTE: I used Pyenv, RVM, and NVM because I use Python, Ruby and Node for different things in pretty much all of my projects (Supervisor, SimpleHTTPServer, SASS, Grunt, etc.) and it's comfortable to have these tools pre-baked in my Docker image.
 
+Docker Hub Link: https://registry.hub.docker.com/u/tzenderman/docker-pyenv-rvm-nvm/
+
 ## Want to use this in your project?
 
 Simply add
