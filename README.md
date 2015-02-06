@@ -39,3 +39,11 @@ And then manage the install inside your project's Dockerfile like this:
         "nvm use;"
 
 Now, when you want to upgrade to a new language version, like Python 3.4, simply update your .python-version to `3.4.0`, rebuild your Docker image, and that's it!
+
+Links:
+
+Pyenv: https://github.com/yyuu/pyenv
+
+RVM: https://rvm.io/
+
+NVM: https://github.com/creationix/nvm
