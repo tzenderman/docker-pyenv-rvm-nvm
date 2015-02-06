@@ -22,8 +22,8 @@ ENV PYTHONDONTWRITEBYTECODE true
 COPY .python-version /code/.python-version
 RUN git clone git://github.com/yyuu/pyenv.git /root/.pyenv && \
     cd /root/.pyenv && \
-    git checkout `git describe --abbrev=0 --tags` && \
-    pyenv install .python-version && \
+    git checkout `git describe --abbrev=0 --tags`
+RUN pyenv install && \
     pyenv global $(cat .python-version)
 
 

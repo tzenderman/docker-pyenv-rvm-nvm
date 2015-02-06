@@ -1,5 +1,7 @@
 # Docker Base Image with Pyenv, RVM, NVM preinstalled
 
+![tzenderman/docker-pyenv-rvm-nvm](http://dockeri.co/image/tzenderman/docker-pyenv-rvm-nvm)
+
 You probably already version the packages you use in your project, but have you ever run into an issue where you or other developers on your team can't reproduce an issue exactly the way someone else on the dev team is experiencing it? This really grinds my gears, so I made this image to prevent that situation! With this Docker image, you can version even your project's languages to avoid any silly differences between environments.
 
 NOTE: I used Pyenv, RVM, and NVM because I use Python, Ruby and Node for different things in pretty much all of my projects (Supervisor, SimpleHTTPServer, SASS, Grunt, etc.) and it's comfortable to have these tools pre-baked in my Docker image.
