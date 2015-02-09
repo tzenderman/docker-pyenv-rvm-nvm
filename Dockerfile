@@ -1,5 +1,5 @@
 # Dockerfile used to build base image for projects using Python, Node, and Ruby.
-FROM ubuntu:14.04
+FROM phusion/baseimage:0.9.16
 MAINTAINER Tim Zenderman <tim@bananadesk.com>
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh && \
     sed -i 's/^mesg n$/tty -s \&\& mesg n/g' /root/.profile
@@ -48,4 +48,8 @@ RUN rvm install $(cat .ruby-version) && \
     rvm use --default && \
     /bin/bash -l -c "gem install bundler"
 
-CMD ["/bin/bash"]
+# Clean up APT when done.
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Use baseimage-docker's init system.
+CMD ["/sbin/my_init"]
