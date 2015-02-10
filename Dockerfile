@@ -7,7 +7,8 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh && \
 WORKDIR /code
 
 ENV PYENV_ROOT /root/.pyenv
-ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:/code/.nvm/bin:/usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+ENV NVM_DIR /usr/local/nvm
+ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$NVM_DIR/bin:/usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
 
 # Install base system libraries.
@@ -27,16 +28,6 @@ RUN pyenv install && \
     pyenv global $(cat .python-version)
 
 
-# Install nvm and default node version.
-COPY .nvmrc /code/.nvmrc
-RUN git clone https://github.com/creationix/nvm.git /code/.nvm && \
-    cd /code/.nvm && \
-    git checkout `git describe --abbrev=0 --tags` && \
-    echo 'source /code/.nvm/nvm.sh' >> /etc/profile && \
-    /bin/bash -l -c "nvm install;" \
-    "nvm use;"
-
-
 # Install rvm, default ruby version and bundler.
 COPY .ruby-version /code/.ruby-version
 COPY .gemrc /code/.gemrc
@@ -47,6 +38,14 @@ RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 && \
 RUN rvm install $(cat .ruby-version) && \
     rvm use --default && \
     /bin/bash -l -c "gem install bundler"
+
+
+# Install nvm and default node version.
+COPY .nvmrc /code/.nvmrc
+RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.23.3/install.sh | bash && \
+    echo 'source $NVM_DIR/nvm.sh' >> /etc/profile && \
+    /bin/bash -l -c "nvm install;" \
+    "nvm use;"
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
