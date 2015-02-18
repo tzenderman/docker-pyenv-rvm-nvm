@@ -28,7 +28,7 @@ And then manage the install inside your project's Dockerfile like this:
 
     COPY .python-version /code/.python-version
     COPY requirements.txt /code/requirements.txt
-    RUN yes | pyenv install .python-version && \
+    RUN yes | pyenv install $(cat .python-version) && \
         pip install -r /code/requirements.txt
 
     COPY .ruby-version /code/.ruby-version
