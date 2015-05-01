@@ -15,13 +15,15 @@ ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$NVM_DIR/bin:/usr/local/rvm/bin:/usr/
 ENV DEBIAN_FRONTEND=noninteractive
 COPY base_dependencies.txt /code/base_dependencies.txt
 RUN apt-get update && \
-    apt-get install -y $(cat /code/base_dependencies.txt)
+    apt-get install -y $(cat /code/base_dependencies.txt) && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /etc/dpkg/dpkg.cfg.d/02apt-speedup
 
 
 # Install pyenv and default python version.
 ENV PYTHONDONTWRITEBYTECODE true
 COPY .python-version /code/.python-version
-RUN git clone git://github.com/yyuu/pyenv.git /root/.pyenv && \
+RUN git clone https://github.com/yyuu/pyenv.git /root/.pyenv && \
     cd /root/.pyenv && \
     git checkout `git describe --abbrev=0 --tags`
 RUN pyenv install && \
@@ -34,10 +36,11 @@ COPY .gemrc /code/.gemrc
 RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 && \
     curl -L https://get.rvm.io | /bin/bash -s stable && \
     echo 'source /etc/profile.d/rvm.sh' >> /etc/profile && \
-    /bin/bash -l -c "rvm requirements;"
-RUN rvm install $(cat .ruby-version) && \
-    rvm use --default && \
-    /bin/bash -l -c "gem install bundler"
+    /bin/bash -l -c "rvm requirements;" && \
+    rvm install $(cat .ruby-version) && \
+    /bin/bash -l -c "rvm use --default $(cat .ruby-version) && \
+    gem install bundler" && \
+    rvm cleanup all
 
 
 # Install nvm and default node version.
