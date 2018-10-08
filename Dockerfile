@@ -20,14 +20,19 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /etc/dpkg/dpkg.cfg.d/02apt-speedup
 
 
-# Install pyenv and default python version.
+# Install pyenv, pyenv-virtualenv and default python version.
 ENV PYTHONDONTWRITEBYTECODE true
+ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
 COPY .python-version /code/.python-version
 RUN git clone https://github.com/yyuu/pyenv.git /root/.pyenv && \
     cd /root/.pyenv && \
-    git checkout `git describe --abbrev=0 --tags`
-RUN pyenv install && \
-    pyenv global $(cat .python-version)
+    git checkout `git describe --abbrev=0 --tags` && \
+    echo 'eval "$(pyenv init -)"' >> /etc/profile
+RUN git clone https://github.com/pyenv/pyenv-virtualenv.git /root/.pyenv/plugins/pyenv-virtualenv && \
+    echo 'eval "$(pyenv virtualenv-init -)"' >> /etc/profile
+RUN pyenv install $(cat .python-version) && \
+    pyenv global $(cat .python-version) && \
+    pip install --upgrade pip
 
 
 # Install rvm, default ruby version and bundler.
