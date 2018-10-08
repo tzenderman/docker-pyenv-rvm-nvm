@@ -1,5 +1,5 @@
 # Dockerfile used to build base image for projects using Python, Node, and Ruby.
-FROM phusion/baseimage:0.9.17
+FROM phusion/baseimage:0.9.20
 MAINTAINER Tim Zenderman <tim@bananadesk.com>
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh && \
     sed -i 's/^mesg n$/tty -s \&\& mesg n/g' /root/.profile
