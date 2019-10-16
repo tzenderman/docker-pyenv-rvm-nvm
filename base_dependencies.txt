@@ -10,3 +10,4 @@ make
 software-properties-common
 wget
 zlib1g-dev
+gnupg2
