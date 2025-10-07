@@ -4,7 +4,7 @@
 
 You probably already version the packages you use in your project, but have you ever run into an issue where you or other developers on your team can't reproduce an issue exactly the way someone else on the dev team is experiencing it? This really grinds my gears, so I made this image to prevent that situation! With this Docker image, you can version even your project's languages to avoid any silly differences between environments.
 
-NOTE: I used Pyenv, RVM, and NVM because I use Python, Ruby and Node for different things in pretty much all of my projects (Supervisor, SimpleHTTPServer, SASS, Grunt, etc.) and it's comfortable to have these tools pre-baked in my Docker image.
+NOTE: I used Pyenv, RVM, and NVM because I use Python, Ruby and Node for different things in pretty much all of my projects and it's comfortable to have these tools pre-baked in my Docker image.
 
 Docker Hub Link: https://registry.hub.docker.com/u/tzenderman/docker-pyenv-rvm-nvm/
 
@@ -42,12 +42,12 @@ And then manage the install inside your project's Dockerfile like this:
     RUN /bin/bash -l -c "nvm install;" \
         "nvm use;"
 
-Now, when you want to upgrade to a new language version, like Python 3.4, simply update your .python-version to `3.4.0`, rebuild your Docker image, and that's it!
+Now, when you want to upgrade to a new language version, like Python 3.14, simply update your .python-version to `3.14.0`, rebuild your Docker image, and that's it!
 
 Links:
 
 Pyenv: https://github.com/yyuu/pyenv
 
-RVM: https://rvm.io/
+RVM: https://github.com/rvm/rvm
 
 NVM: https://github.com/creationix/nvm
