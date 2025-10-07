@@ -1,14 +1,14 @@
 # Dockerfile used to build base image for projects using Python, Node, and Ruby.
-FROM phusion/baseimage:0.11
-MAINTAINER Tim Zenderman <tim@bananadesk.com>
+FROM phusion/baseimage:jammy-1.0.4
+
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh && \
     sed -i 's/^mesg n$/tty -s \&\& mesg n/g' /root/.profile
 
 WORKDIR /code
 
-ENV PYENV_ROOT /root/.pyenv
-ENV NVM_DIR /usr/local/nvm
-ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$NVM_DIR/bin:/usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+ENV PYENV_ROOT=/root/.pyenv
+ENV NVM_DIR=/usr/local/nvm
+ENV PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$NVM_DIR/bin:/usr/local/rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
 
 # Install base system libraries.
@@ -21,8 +21,8 @@ RUN apt-get update && \
 
 
 # Install pyenv, pyenv-virtualenv and default python version.
-ENV PYTHONDONTWRITEBYTECODE true
-ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
+ENV PYTHONDONTWRITEBYTECODE=true
+ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV=true
 COPY .python-version /code/.python-version
 RUN git clone https://github.com/yyuu/pyenv.git /root/.pyenv && \
     cd /root/.pyenv && \
@@ -38,7 +38,7 @@ RUN pyenv install $(cat .python-version) && \
 # Install rvm, default ruby version and bundler.
 COPY .ruby-version /code/.ruby-version
 COPY .gemrc /code/.gemrc
-RUN gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB && \
+RUN gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB && \
     curl -L https://get.rvm.io | /bin/bash -s stable --ignore-dotfiles && \
     echo 'source /etc/profile.d/rvm.sh' >> /etc/profile && \
     /bin/bash -l -c "rvm requirements;" && \
@@ -48,12 +48,19 @@ RUN gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A
     rvm cleanup all
 
 
-# Install nvm and default node version.
+# Install nvm.
+RUN mkdir -p $NVM_DIR && \
+    curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | NVM_DIR=$NVM_DIR bash
+
+# Configure nvm in profile.
+RUN echo 'source $NVM_DIR/nvm.sh' >> /etc/profile
+
+# Install default node version.
 COPY .nvmrc /code/.nvmrc
-RUN curl https://raw.githubusercontent.com/creationix/nvm/v0.23.3/install.sh | bash && \
-    echo 'source $NVM_DIR/nvm.sh' >> /etc/profile && \
-    /bin/bash -l -c "nvm install;" \
-    "nvm use;"
+RUN /bin/bash -l -c "cd /tmp && source $NVM_DIR/nvm.sh && nvm install \$(cat /code/.nvmrc)"
+
+# Set default node version.
+RUN /bin/bash -l -c "source $NVM_DIR/nvm.sh && nvm alias default \$(cat /code/.nvmrc) && nvm use default"
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
